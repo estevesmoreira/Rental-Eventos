@@ -1,0 +1,1843 @@
+Certo — você quer o conteúdo direto aqui no chat, em texto/Markdown para copiar e colar no GitHub, não como arquivo para baixar.
+
+Segue a versão em texto:
+
+MANUAL DE RESOLUÇÃO DE PROBLEMAS — SPRING BOOT + VS CODE + MAVEN + POSTMAN + POSTGRESQL
+
+«Objetivo: usar este arquivo quando alguma coisa der errado durante a prova.
+
+Não tente alterar várias partes do sistema ao mesmo tempo. Primeiro identifique onde o problema está, depois corrija uma coisa por vez.»
+
+---
+
+SUMÁRIO
+
+1. "Regra principal de diagnóstico" (#1-regra-principal-de-diagnóstico)
+2. "Descobrir se o problema é VS Code, Maven, código ou execução" (#2-descobrir-se-o-problema-é-vs-code-maven-código-ou-execução)
+3. "Projeto não compila" (#3-projeto-não-compila)
+4. "VS Code está todo vermelho" (#4-vs-code-está-todo-vermelho)
+5. ""cannot find symbol"" (#5-cannot-find-symbol)
+6. "Imports e packages" (#6-imports-e-packages)
+7. "Java/JDK errado" (#7-javajdk-errado)
+8. ""pom.xml" com erro" (#8-pomxml-com-erro)
+9. "Maven não encontra dependência" (#9-maven-não-encontra-dependência)
+10. "Maven offline" (#10-maven-offline)
+11. ""BUILD SUCCESS", mas Spring não inicia" (#11-build-success-mas-spring-não-inicia)
+12. ""APPLICATION FAILED TO START"" (#12-application-failed-to-start)
+13. "Porta 8080 ocupada" (#13-porta-8080-ocupada)
+14. "Bean não encontrado" (#14-bean-não-encontrado)
+15. "Component Scan" (#15-component-scan)
+16. "PostgreSQL não conecta" (#16-postgresql-não-conecta)
+17. "Usuário ou senha do banco incorretos" (#17-usuário-ou-senha-do-banco-incorretos)
+18. "Banco não existe" (#18-banco-não-existe)
+19. "Porta 5432 x 5433" (#19-porta-5432-x-5433)
+20. "Tabela não existe" (#20-tabela-não-existe)
+21. "Coluna não existe" (#21-coluna-não-existe)
+22. "Alterei Entity e o banco quebrou" (#22-alterei-entity-e-o-banco-quebrou)
+23. ""ddl-auto"" (#23-ddl-auto)
+24. ""NOT NULL" falhando" (#24-not-null-falhando)
+25. ""UNIQUE" falhando" (#25-unique-falhando)
+26. "Foreign Key impedindo DELETE" (#26-foreign-key-impedindo-delete)
+27. ""Not a managed type"" (#27-not-a-managed-type)
+28. "Entity sem "@Id"" (#28-entity-sem-id)
+29. "ID incompatível no Repository" (#29-id-incompatível-no-repository)
+30. ""detached entity"" (#30-detached-entity)
+31. ""transient object"" (#31-transient-object)
+32. ""LazyInitializationException"" (#32-lazyinitializationexception)
+33. ""StackOverflowError"" (#33-stackoverflowerror)
+34. "Relacionamento não salva" (#34-relacionamento-não-salva)
+35. ""mappedBy" errado" (#35-mappedby-errado)
+36. "Cascade causando problema" (#36-cascade-causando-problema)
+37. "Enum dá 400" (#37-enum-dá-400)
+38. "DTO não valida" (#38-dto-não-valida)
+39. ""@NotNull" e "@NotBlank" não funcionam" (#39-notnull-e-notblank-não-funcionam)
+40. "Record e "getNome()"" (#40-record-e-getnome)
+41. "Controller não aparece" (#41-controller-não-aparece)
+42. "404" (#42-404)
+43. "405" (#43-405)
+44. "Postman 400" (#44-postman-400)
+45. "Postman 401" (#45-postman-401)
+46. "Postman 403" (#46-postman-403)
+47. "Postman 404" (#47-postman-404)
+48. "Postman 405" (#48-postman-405)
+49. "Postman 409" (#49-postman-409)
+50. "Postman 415" (#50-postman-415)
+51. "Postman 500" (#51-postman-500)
+52. "Postman não envia JSON" (#52-postman-não-envia-json)
+53. "Bearer Token não funciona" (#53-bearer-token-não-funciona)
+54. "Login não funciona" (#54-login-não-funciona)
+55. "Senha correta é recusada" (#55-senha-correta-é-recusada)
+56. "Problemas com JWT" (#56-problemas-com-jwt)
+57. ""hasRole" x "hasAuthority"" (#57-hasrole-x-hasauthority)
+58. "Swagger não abre" (#58-swagger-não-abre)
+59. "Swagger não mostra endpoints" (#59-swagger-não-mostra-endpoints)
+60. ""/v3/api-docs" retorna 401" (#60-v3api-docs-retorna-401)
+61. "Content-Type" (#61-content-type)
+62. "Datas dão erro" (#62-datas-dão-erro)
+63. "ID retorna null" (#63-id-retorna-null)
+64. "PUT cria registro novo" (#64-put-cria-registro-novo)
+65. "DELETE falha" (#65-delete-falha)
+66. "Dados desaparecem" (#66-dados-desaparecem)
+67. "Alteração no código não aparece" (#67-alteração-no-código-não-aparece)
+68. "Como ler erro gigante no terminal" (#68-como-ler-erro-gigante-no-terminal)
+69. "Debug com "System.out.println"" (#69-debug-com-systemoutprintln)
+70. "Isolar problema por camada" (#70-isolar-problema-por-camada)
+71. "Ordem ideal para testar no Postman" (#71-ordem-ideal-para-testar-no-postman)
+72. "Emergência: faltam 20 minutos" (#72-emergência-faltam-20-minutos)
+73. "Tabela rápida de erros" (#73-tabela-rápida-de-erros)
+74. "Comandos de emergência" (#74-comandos-de-emergência)
+75. "Frases para decorar" (#75-frases-para-decorar)
+
+---
+
+1. REGRA PRINCIPAL DE DIAGNÓSTICO
+
+Quando algo quebrar:
+
+NÃO:
+alterar Controller
+alterar Service
+alterar Entity
+alterar Security
+alterar pom.xml
+alterar banco
+tudo ao mesmo tempo
+
+Faça:
+
+1. Identifique o erro.
+
+2. Leia a mensagem.
+
+3. Descubra em qual camada está.
+
+4. Corrija UMA coisa.
+
+5. Rode novamente.
+
+6. Veja se o erro mudou.
+
+Pense sempre nesta sequência:
+
+VS CODE
+   ↓
+MAVEN
+   ↓
+COMPILAÇÃO
+   ↓
+SPRING BOOT
+   ↓
+BANCO
+   ↓
+SECURITY
+   ↓
+CONTROLLER
+   ↓
+SERVICE
+   ↓
+REPOSITORY
+   ↓
+POSTGRESQL
+
+---
+
+2. DESCOBRIR SE O PROBLEMA É VS CODE, MAVEN, CÓDIGO OU EXECUÇÃO
+
+Rode:
+
+.\mvnw.cmd -o clean compile
+
+Se aparecer:
+
+BUILD FAILURE
+
+o problema pode ser:
+
+código
+import
+package
+pom.xml
+Java
+dependência
+
+Se aparecer:
+
+BUILD SUCCESS
+
+mas o VS Code continua vermelho:
+
+provavelmente é problema da IDE.
+
+Tente:
+
+CTRL + SHIFT + P
+
+e:
+
+Java: Clean Java Language Server Workspace
+
+Depois:
+
+Maven: Reload Projects
+
+---
+
+3. PROJETO NÃO COMPILA
+
+Execute:
+
+.\mvnw.cmd -o clean compile
+
+Procure o primeiro erro real.
+
+Exemplo:
+
+[ERROR] UsuarioService.java:[35,20] cannot find symbol
+
+Vá diretamente ao arquivo e linha.
+
+Não tente corrigir primeiro o erro número 30.
+
+Um único erro no começo pode criar muitos erros em cascata.
+
+---
+
+4. VS CODE ESTÁ TODO VERMELHO
+
+Faça nesta ordem.
+
+1. Salvar tudo
+
+CTRL + SHIFT + S
+
+2. Recarregar Maven
+
+CTRL + SHIFT + P
+
+Digite:
+
+Maven: Reload Projects
+
+3. Limpar Java Language Server
+
+CTRL + SHIFT + P
+
+Digite:
+
+Java: Clean Java Language Server Workspace
+
+4. Recarregar janela
+
+CTRL + SHIFT + P
+
+Developer: Reload Window
+
+5. Testar pelo terminal
+
+.\mvnw.cmd -o clean compile
+
+Se Maven diz:
+
+BUILD SUCCESS
+
+o código provavelmente está compilando, mesmo que VS Code ainda esteja mostrando vermelho.
+
+---
+
+5. "cannot find symbol"
+
+Exemplo:
+
+cannot find symbol
+method getNome()
+
+Pode significar:
+
+método não existe
+getter não existe
+nome errado
+import errado
+classe errada
+record sendo usado como classe tradicional
+
+Se DTO é:
+
+public record UsuarioDTO(
+    String nome
+) {
+}
+
+ERRADO:
+
+dto.getNome()
+
+CERTO:
+
+dto.nome()
+
+---
+
+6. IMPORTS E PACKAGES
+
+Arquivo:
+
+src/main/java/com/senai/infoa/prova/service/UsuarioService.java
+
+deve conter:
+
+package com.senai.infoa.prova.service;
+
+Se estiver:
+
+package com.senai.infoa.prova.services;
+
+está diferente.
+
+Cheque também:
+
+model
+models
+
+repository
+repositories
+
+service
+services
+
+enuns
+enums
+
+Java considera packages diferentes.
+
+---
+
+7. JAVA/JDK ERRADO
+
+Cheque:
+
+java -version
+
+javac -version
+
+.\mvnw.cmd -version
+
+Se projeto usa Java 25 e Maven utiliza versão inferior, pode aparecer:
+
+release version 25 not supported
+
+No VS Code:
+
+CTRL + SHIFT + P
+
+Java: Configure Java Runtime
+
+Selecione JDK correto.
+
+---
+
+8. "pom.xml" COM ERRO
+
+Se colocou uma dependência e tudo ficou vermelho, confira XML.
+
+ERRADO:
+
+<dependency>
+    ...
+
+sem:
+
+</dependency>
+
+Estrutura:
+
+<dependencies>
+
+    <dependency>
+        ...
+    </dependency>
+
+</dependencies>
+
+Depois:
+
+Maven: Reload Projects
+
+e:
+
+.\mvnw.cmd -o clean compile
+
+---
+
+9. MAVEN NÃO ENCONTRA DEPENDÊNCIA
+
+Mensagens:
+
+Missing artifact
+
+ou:
+
+Could not resolve dependency
+
+Pode significar:
+
+versão errada
+dependência não baixada
+cache inexistente
+pom errado
+sem internet
+
+Cache Maven normalmente:
+
+C:\Users\SEU_USUARIO\.m2\repository
+
+Se dependência não existe lá e não há internet, Maven não poderá baixar.
+
+---
+
+10. MAVEN OFFLINE
+
+Use:
+
+.\mvnw.cmd -o clean compile
+
+"-o":
+
+offline
+
+Para rodar:
+
+.\mvnw.cmd -o spring-boot:run
+
+Se falhar porque falta dependência:
+
+não troque versões aleatoriamente.
+
+---
+
+11. "BUILD SUCCESS", MAS SPRING NÃO INICIA
+
+Isso significa:
+
+compilação = passou
+execução = falhou
+
+Rode:
+
+.\mvnw.cmd -o spring-boot:run
+
+Procure:
+
+APPLICATION FAILED TO START
+
+Depois procure:
+
+Caused by:
+
+---
+
+12. "APPLICATION FAILED TO START"
+
+Se aparece:
+
+DataSource
+Connection
+PostgreSQL
+
+problema provavelmente é banco.
+
+Se:
+
+required a bean
+
+problema de Bean/injeção.
+
+Se:
+
+Port 8080
+
+porta ocupada.
+
+Se:
+
+Not a managed type
+
+Entity/JPA.
+
+Se:
+
+JwtDecoder
+secret
+key
+
+Security/JWT.
+
+---
+
+13. PORTA 8080 OCUPADA
+
+Erro:
+
+Port 8080 was already in use
+
+No PowerShell:
+
+netstat -ano | findstr :8080
+
+Aparecerá PID.
+
+Mate:
+
+taskkill /PID NUMERO /F
+
+Ou altere:
+
+server.port=8081
+
+Mas então Postman deve usar:
+
+http://localhost:8081
+
+---
+
+14. BEAN NÃO ENCONTRADO
+
+Erro:
+
+required a bean of type ...
+that could not be found
+
+Cheque:
+
+Service:
+
+@Service
+
+Controller:
+
+@RestController
+
+Component:
+
+@Component
+
+Config:
+
+@Configuration
+
+Repository:
+
+extends JpaRepository
+
+---
+
+15. COMPONENT SCAN
+
+Classe principal deve ficar no package raiz.
+
+Bom:
+
+com.senai.infoa.prova
+    ProvaApplication
+
+com.senai.infoa.prova.controller
+com.senai.infoa.prova.service
+com.senai.infoa.prova.repository
+
+Ruim:
+
+com.senai.infoa.app
+    ProvaApplication
+
+e:
+
+com.senai.infoa.prova.service
+
+porque Service pode ficar fora do scan automático.
+
+---
+
+16. POSTGRESQL NÃO CONECTA
+
+Erro:
+
+Connection refused
+
+Cheque:
+
+spring.datasource.url=jdbc:postgresql://localhost:5433/postgres
+spring.datasource.username=postgres
+spring.datasource.password=aluno
+
+Teste porta:
+
+netstat -ano | findstr 5433
+
+ou:
+
+netstat -ano | findstr 5432
+
+---
+
+17. USUÁRIO OU SENHA DO BANCO INCORRETOS
+
+Erro:
+
+password authentication failed for user "postgres"
+
+Significa que encontrou PostgreSQL, mas credencial está errada.
+
+Cheque:
+
+spring.datasource.username=postgres
+spring.datasource.password=aluno
+
+---
+
+18. BANCO NÃO EXISTE
+
+Erro:
+
+database "prova" does not exist
+
+Se URL é:
+
+jdbc:postgresql://localhost:5432/prova
+
+precisa existir banco:
+
+prova
+
+---
+
+19. PORTA 5432 X 5433
+
+Não presuma.
+
+Seu projeto pode usar:
+
+5433
+
+e outra instalação:
+
+5432
+
+Sempre olhe:
+
+spring.datasource.url
+
+---
+
+20. TABELA NÃO EXISTE
+
+Cheque Entity:
+
+@Entity
+
+Cheque:
+
+@Table(name = "usuarios")
+
+Cheque:
+
+spring.jpa.hibernate.ddl-auto=update
+
+Cheque também se você está olhando o mesmo banco da aplicação.
+
+---
+
+21. COLUNA NÃO EXISTE
+
+Pode acontecer se você alterou Entity.
+
+Antes:
+
+private String nomeCompleto;
+
+Depois:
+
+private String nome;
+
+Banco antigo ainda pode estar inconsistente.
+
+Se banco é descartável:
+
+DROP TABLE usuarios CASCADE;
+
+e reinicie.
+
+---
+
+22. ALTEREI ENTITY E O BANCO QUEBROU
+
+Mudanças perigosas:
+
+nome de campo
+tipo
+nullable
+unique
+relacionamento
+nome de tabela
+FK
+
+"ddl-auto=update" não resolve todas as migrações perfeitamente.
+
+Se estiver no começo da prova e dados não importam:
+
+resetar tabela costuma ser mais rápido.
+
+---
+
+23. "ddl-auto"
+
+Normal:
+
+spring.jpa.hibernate.ddl-auto=update
+
+"create":
+
+recria estrutura
+pode apagar dados
+
+"create-drop":
+
+cria
+e pode apagar ao finalizar
+
+Se seus dados desaparecem, cheque isso.
+
+---
+
+24. "NOT NULL" FALHANDO
+
+Você adicionou:
+
+@Column(nullable = false)
+private String cpf;
+
+Mas registros antigos:
+
+cpf = null
+
+Banco não consegue aplicar.
+
+Soluções:
+
+preencher dados antigos
+resetar tabela
+temporariamente permitir null
+
+---
+
+25. "UNIQUE" FALHANDO
+
+Você adicionou:
+
+@Column(unique = true)
+private String email;
+
+mas já existem emails repetidos.
+
+Apague/corrija duplicados.
+
+---
+
+26. FOREIGN KEY IMPEDINDO DELETE
+
+Você possui:
+
+Usuario
+↓
+Evento
+
+e tenta apagar Usuario ainda usado por Evento.
+
+Banco impede.
+
+Não coloque imediatamente:
+
+CascadeType.ALL
+
+Veja a regra de negócio.
+
+---
+
+27. "Not a managed type"
+
+Erro:
+
+Not a managed type
+
+Cheque:
+
+@Entity
+
+Cheque package.
+
+Cheque Component Scan.
+
+Import correto:
+
+jakarta.persistence.Entity
+
+---
+
+28. ENTITY SEM "@Id"
+
+Toda Entity precisa de ID.
+
+@Id
+@GeneratedValue(
+    strategy = GenerationType.IDENTITY
+)
+private Long id;
+
+---
+
+29. ID INCOMPATÍVEL NO REPOSITORY
+
+Entity:
+
+private Long id;
+
+Repository correto:
+
+JpaRepository<Usuario, Long>
+
+Não:
+
+JpaRepository<Usuario, Integer>
+
+---
+
+30. "detached entity"
+
+Uma causa pode ser usar uma Entity que possui ID, mas não está gerenciada como esperado.
+
+Em relacionamentos, prefira buscar objeto existente:
+
+Usuario usuario =
+        usuarioRepository
+            .findById(id)
+            .orElseThrow(...);
+
+---
+
+31. "transient object"
+
+Erro parecido:
+
+object references an unsaved transient instance
+
+Você fez algo semelhante a:
+
+Usuario usuario = new Usuario();
+usuario.setId(dto.usuarioId());
+
+evento.setUsuario(usuario);
+
+Prefira:
+
+Usuario usuario =
+        usuarioRepository
+            .findById(dto.usuarioId())
+            .orElseThrow(...);
+
+evento.setUsuario(usuario);
+
+---
+
+32. "LazyInitializationException"
+
+Relação LAZY foi acessada quando contexto JPA adequado já acabou.
+
+Na prova, uma forma de reduzir problemas:
+
+Entity
+↓
+Service
+↓
+ResponseDTO
+
+Não devolva Entity diretamente sem necessidade.
+
+---
+
+33. "StackOverflowError"
+
+Muito comum em relação bidirecional.
+
+Usuario
+↓
+eventos
+↓
+usuario
+↓
+eventos
+↓
+usuario...
+
+Solução preferível:
+
+DTO
+
+---
+
+34. RELACIONAMENTO NÃO SALVA
+
+Cheque:
+
+DTO recebe usuarioId?
+usuário realmente existe?
+Service busca usuário?
+setUsuario foi chamado?
+@JoinColumn correto?
+@ManyToOne correto?
+
+Exemplo:
+
+Usuario usuario =
+    usuarioRepository
+        .findById(dto.usuarioId())
+        .orElseThrow();
+
+evento.setUsuario(usuario);
+
+---
+
+35. "mappedBy" ERRADO
+
+Se Evento tem:
+
+private Usuario usuario;
+
+Usuario deve usar:
+
+@OneToMany(mappedBy = "usuario")
+
+Não:
+
+mappedBy = "usuario_id"
+
+"mappedBy" recebe o nome do atributo Java.
+
+---
+
+36. CASCADE CAUSANDO PROBLEMA
+
+Se usa:
+
+cascade = CascadeType.ALL
+
+operações podem propagar.
+
+Exemplo:
+
+deleta Usuario
+↓
+deleta outras entidades
+
+Não coloque Cascade apenas para “sumir com erro”.
+
+---
+
+37. ENUM DÁ 400
+
+Enum:
+
+public enum TipoUsuario {
+    ADMIN,
+    USUARIO
+}
+
+Funciona:
+
+{
+  "tipo": "ADMIN"
+}
+
+Pode falhar:
+
+{
+  "tipo": "admin"
+}
+
+Use exatamente o valor definido.
+
+---
+
+38. DTO NÃO VALIDA
+
+DTO:
+
+@NotBlank
+String nome
+
+Controller:
+
+public ResponseEntity<?> salvar(
+    @Valid
+    @RequestBody
+    UsuarioRequestDTO dto
+)
+
+Sem "@Valid", suas validações podem não ser aplicadas como espera.
+
+---
+
+39. "@NotNull" E "@NotBlank" NÃO FUNCIONAM
+
+Cheque imports:
+
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+
+Cheque dependência Validation no "pom.xml".
+
+Cheque:
+
+@Valid
+
+---
+
+40. RECORD E "getNome()"
+
+Record:
+
+public record UsuarioDTO(
+    String nome
+) {
+}
+
+Use:
+
+dto.nome()
+
+Não:
+
+dto.getNome()
+
+---
+
+41. CONTROLLER NÃO APARECE
+
+Cheque:
+
+@RestController
+
+Depois:
+
+@RequestMapping(...)
+
+Cheque package e Component Scan.
+
+Cheque compilação.
+
+---
+
+42. 404
+
+404:
+
+Not Found
+
+Pode significar:
+
+URL errada
+rota errada
+ID inexistente
+Controller não carregado
+porta errada
+
+Some:
+
+@RequestMapping("/usuarios")
+
++ 
+
+@GetMapping("/{id}")
+
+=
+
+GET /usuarios/1
+
+---
+
+43. 405
+
+405 Method Not Allowed
+
+Você provavelmente usou método errado.
+
+Controller:
+
+@PostMapping
+
+Postman:
+
+GET
+
+Troque para:
+
+POST
+
+---
+
+44. POSTMAN 400
+
+Cheque:
+
+JSON
+enum
+data
+campo obrigatório
+tipo do campo
+validation
+
+Exemplo inválido:
+
+{
+  "nome": "",
+  "email": "abc"
+}
+
+---
+
+45. POSTMAN 401
+
+401 Unauthorized
+
+Normalmente:
+
+sem token
+token inválido
+token expirado
+rota pública não está permitAll
+login inválido
+
+Se rota privada:
+
+Authorization
+→ Bearer Token
+
+---
+
+46. POSTMAN 403
+
+403 Forbidden
+
+Normalmente:
+
+token válido
+usuário autenticado
+mas sem role necessária
+
+Exemplo:
+
+USUARIO
+
+tentando rota:
+
+ADMIN
+
+---
+
+47. POSTMAN 404
+
+Cheque:
+
+http://localhost:8080
+
+Cheque:
+
+@RequestMapping
+
+e:
+
+@GetMapping
+@PostMapping
+
+---
+
+48. POSTMAN 405
+
+Compare método do Controller com seletor do Postman.
+
+@PutMapping
+
+→
+
+PUT
+
+---
+
+49. POSTMAN 409
+
+409 Conflict
+
+Pode significar:
+
+email duplicado
+CPF duplicado
+registro já existente
+
+---
+
+50. POSTMAN 415
+
+415 Unsupported Media Type
+
+Faça:
+
+Body
+→ raw
+→ JSON
+
+Header:
+
+Content-Type: application/json
+
+---
+
+51. POSTMAN 500
+
+500 Internal Server Error
+
+Pare de olhar só o Postman.
+
+Vá para:
+
+terminal do VS Code
+
+Procure:
+
+Caused by:
+
+---
+
+52. POSTMAN NÃO ENVIA JSON
+
+Configure:
+
+Body
+→ raw
+→ JSON
+
+JSON válido:
+
+{
+  "nome": "Nicolas",
+  "email": "nicolas@email.com"
+}
+
+JSON inválido:
+
+{
+  "nome": "Nicolas",
+  "email": "nicolas@email.com",
+}
+
+Não pode ter vírgula final.
+
+---
+
+53. BEARER TOKEN NÃO FUNCIONA
+
+No Postman:
+
+Authorization
+→ Bearer Token
+
+Campo Token:
+
+eyJhbGciOi...
+
+Não coloque:
+
+Bearer eyJ...
+
+porque Postman já adiciona "Bearer".
+
+---
+
+54. LOGIN NÃO FUNCIONA
+
+Cheque em ordem:
+
+1. usuário existe?
+2. email correto?
+3. cadastro criptografou/hash da senha?
+4. login usa matches?
+5. rota login está permitAll?
+6. JSON está correto?
+
+---
+
+55. SENHA CORRETA É RECUSADA
+
+Cadastro:
+
+usuario.setSenha(
+    passwordEncoder.encode(dto.senha())
+);
+
+Login:
+
+passwordEncoder.matches(
+    dto.getSenha(),
+    usuario.getSenha()
+);
+
+Não faça:
+
+usuario.getSenha()
+    .equals(dto.getSenha())
+
+---
+
+56. PROBLEMAS COM JWT
+
+Possíveis causas:
+
+token expirado
+token incompleto
+secret mudou
+secret muito curta
+algoritmo diferente
+claim diferente
+
+Primeiro:
+
+faça login novamente
+
+copie novo token.
+
+---
+
+57. "hasRole" X "hasAuthority"
+
+Se sua authority é:
+
+ROLE_ADMIN
+
+Use:
+
+.hasRole("ADMIN")
+
+ou:
+
+.hasAuthority("ROLE_ADMIN")
+
+Evite:
+
+.hasRole("ROLE_ADMIN")
+
+---
+
+58. SWAGGER NÃO ABRE
+
+Primeiro veja se Spring realmente iniciou.
+
+Console deve ter algo como:
+
+Started ProvaApplication
+
+Teste:
+
+http://localhost:8080/swagger-ui.html
+
+e:
+
+http://localhost:8080/swagger-ui/index.html
+
+Se configurou caminho próprio, use esse.
+
+---
+
+59. SWAGGER NÃO MOSTRA ENDPOINTS
+
+Cheque:
+
+@RestController
+
+Cheque package.
+
+Cheque Component Scan.
+
+Teste:
+
+http://localhost:8080/v3/api-docs
+
+---
+
+60. "/v3/api-docs" RETORNA 401
+
+Security está bloqueando documentação.
+
+Adicione:
+
+.requestMatchers(
+    "/swagger-ui.html",
+    "/swagger-ui/**",
+    "/v3/api-docs/**"
+)
+.permitAll()
+
+---
+
+61. CONTENT-TYPE
+
+Para JSON:
+
+Content-Type: application/json
+
+No Postman:
+
+Body
+→ raw
+→ JSON
+
+normalmente configura automaticamente.
+
+---
+
+62. DATAS DÃO ERRO
+
+Para:
+
+LocalDate
+
+mande:
+
+{
+  "data": "2026-09-21"
+}
+
+Para:
+
+LocalDateTime
+
+mande:
+
+{
+  "dataHora": "2026-09-21T14:30:00"
+}
+
+---
+
+63. ID RETORNA NULL
+
+Erro:
+
+Usuario usuario = new Usuario();
+
+UsuarioResponseDTO dto =
+    toDTO(usuario);
+
+repository.save(usuario);
+
+return dto;
+
+O DTO foi criado antes do banco gerar ID.
+
+Faça:
+
+Usuario salvo =
+    repository.save(usuario);
+
+return toDTO(salvo);
+
+---
+
+64. PUT CRIA REGISTRO NOVO
+
+No update, não faça simplesmente:
+
+Usuario usuario = new Usuario();
+
+Busque:
+
+Usuario usuario =
+    repository
+        .findById(id)
+        .orElseThrow(...);
+
+Depois altere campos.
+
+---
+
+65. DELETE FALHA
+
+Pode ser:
+
+ID inexistente
+Foreign Key
+Security
+role
+regra de negócio
+
+Olhe status HTTP e terminal.
+
+---
+
+66. DADOS DESAPARECEM
+
+Cheque:
+
+spring.jpa.hibernate.ddl-auto=create
+
+ou:
+
+spring.jpa.hibernate.ddl-auto=create-drop
+
+Se quiser manter:
+
+spring.jpa.hibernate.ddl-auto=update
+
+---
+
+67. ALTERAÇÃO NO CÓDIGO NÃO APARECE
+
+Pare:
+
+CTRL + C
+
+Rode novamente:
+
+.\mvnw.cmd -o spring-boot:run
+
+Se alterou "pom.xml":
+
+Maven: Reload Projects
+
+---
+
+68. COMO LER ERRO GIGANTE NO TERMINAL
+
+Não leia tudo aleatoriamente.
+
+Procure:
+
+Caused by:
+
+Exemplo:
+
+BeanCreationException
+↓
+DataAccessException
+↓
+PSQLException
+↓
+password authentication failed
+
+A última causa:
+
+password authentication failed
+
+é o problema real.
+
+---
+
+69. DEBUG COM "System.out.println"
+
+Se não sabe até onde código chegou:
+
+Controller:
+
+System.out.println(
+    ">>> ENTROU NO CONTROLLER"
+);
+
+Service:
+
+System.out.println(
+    ">>> ENTROU NO SERVICE"
+);
+
+Antes do save:
+
+System.out.println(
+    ">>> ANTES DO SAVE"
+);
+
+Depois:
+
+System.out.println(
+    ">>> DEPOIS DO SAVE"
+);
+
+---
+
+70. ISOLAR PROBLEMA POR CAMADA
+
+Controller não imprime nada
+
+Possível:
+
+rota errada
+método HTTP errado
+Security bloqueou
+
+Controller imprime, Service não
+
+Problema na chamada Controller → Service.
+
+Service imprime e Repository falha
+
+Problema:
+
+JPA
+banco
+query
+Entity
+
+Repository salva, mas resposta falha
+
+Problema:
+
+DTO
+serialização
+relacionamento
+
+---
+
+71. ORDEM IDEAL PARA TESTAR NO POSTMAN
+
+Sempre:
+
+1. cadastro
+↓
+2. login
+↓
+3. GET protegido
+↓
+4. GET por ID
+↓
+5. POST entidade simples
+↓
+6. GET
+↓
+7. PUT
+↓
+8. relacionamento
+↓
+9. DELETE por último
+
+Não comece pelo endpoint mais complexo.
+
+---
+
+72. EMERGÊNCIA: FALTAM 20 MINUTOS
+
+Pare de adicionar funcionalidades.
+
+Faça:
+
+[ ] mvnw -o clean compile
+
+[ ] Spring inicia
+
+[ ] banco conecta
+
+[ ] cadastro funciona
+
+[ ] login funciona
+
+[ ] token funciona
+
+[ ] GET principal funciona
+
+[ ] POST principal funciona
+
+[ ] corrigir 401
+
+[ ] corrigir 403
+
+[ ] corrigir 500
+
+Não reorganize arquitetura inteira faltando 20 minutos.
+
+---
+
+73. TABELA RÁPIDA DE ERROS
+
+Erro| Suspeite primeiro de
+Tudo vermelho| VS Code / Language Server
+"cannot find symbol"| nome/import/método
+"release version..."| JDK
+"Missing artifact"| Maven/cache
+porta 8080 ocupada| outro processo
+"Connection refused"| banco/porta
+"password authentication failed"| credencial banco
+"database does not exist"| banco errado
+"Not a managed type"| "@Entity"/scan
+"transient instance"| relação com Entity não salva
+"LazyInitializationException"| LAZY/contexto
+"StackOverflowError"| relação bidirecional/JSON
+400| JSON/validação
+401| autenticação
+403| autorização
+404| URL/recurso
+405| método HTTP
+409| conflito
+415| Content-Type
+500| terminal/erro interno
+ID null| DTO antes do save
+PUT cria novo| update errado
+DELETE falha| FK/Security
+dados desaparecem| "create"/"create-drop"
+
+---
+
+74. COMANDOS DE EMERGÊNCIA
+
+Compilar:
+
+.\mvnw.cmd -o clean compile
+
+Build:
+
+.\mvnw.cmd -o clean package -DskipTests
+
+Rodar:
+
+.\mvnw.cmd -o spring-boot:run
+
+Java:
+
+java -version
+
+Compiler:
+
+javac -version
+
+Maven:
+
+.\mvnw.cmd -version
+
+Porta 8080:
+
+netstat -ano | findstr :8080
+
+Banco:
+
+netstat -ano | findstr 5432
+
+ou:
+
+netstat -ano | findstr 5433
+
+Matar processo:
+
+taskkill /PID NUMERO /F
+
+---
+
+75. FRASES PARA DECORAR
+
+BUILD SUCCESS vale mais que a cor do VS Code.
+
+400 = entrada inválida.
+
+401 = autenticação.
+
+403 = autorização.
+
+404 = rota/recurso.
+
+405 = método HTTP errado.
+
+409 = conflito.
+
+415 = Content-Type.
+
+500 = olhar terminal.
+
+Não altere cinco coisas ao mesmo tempo.
+
+Procure o primeiro erro de compilação.
+
+Procure a última causa específica no runtime.
+
+Record usa nome(), não getNome().
+
+mappedBy usa nome do atributo Java.
+
+@ManyToOne normalmente está no lado que contém FK.
+
+Senha é salva com encode().
+
+Senha é conferida com matches().
+
+401?
+Veja token.
+
+403?
+Veja role.
+
+415?
+Body → raw → JSON.
+
+500?
+Olhe o terminal.
+
+Entity mudou?
+Veja banco/schema.
+
+pom.xml mudou?
+Reload Maven.
+
+application.properties mudou?
+Reinicie Spring.
+
+VS Code vermelho?
+Compile pelo terminal.
+
+Compila mas não sobe?
+Problema de runtime/configuração.
+
+Controller não recebe?
+Veja rota, método e Security.
+
+Service funciona, Repository falha?
+Veja JPA e banco.
+
+Não sabe o problema?
+Isole camada por camada.
+
+---
+
+FLUXO FINAL DE DIAGNÓSTICO
+
+Sempre que alguma coisa der errado:
+
+DEU ERRO
+   ↓
+QUAL É O STATUS/MENSAGEM?
+   ↓
+COMPILA?
+   ↓
+SPRING SOBE?
+   ↓
+BANCO CONECTA?
+   ↓
+SECURITY DEIXA PASSAR?
+   ↓
+CONTROLLER É CHAMADO?
+   ↓
+SERVICE É CHAMADO?
+   ↓
+REPOSITORY FUNCIONA?
+   ↓
+BANCO EXECUTA?
+   ↓
+RESPOSTA/DTO FUNCIONA?
+
+Se você seguir essa ordem, evita o pior erro possível numa prova:
+
+não saber o que está errado
+↓
+mudar várias coisas
+↓
+criar novos erros
+↓
+não saber mais o que funcionava antesEsse formato agora é texto puro em Markdown, pronto para copiar e colocar diretamente em outro arquivo .md no GitHub.
