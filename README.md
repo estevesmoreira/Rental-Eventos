@@ -1,8 +1,3 @@
-Entendi. Você precisa de **um roteiro de consulta para a prova, com código completo para copiar, colar e adaptar ao minimundo**, incluindo a ordem de implementação, testes e soluções para os erros mais comuns.
-
-**Não alterei nenhum arquivo do Rental Eventos.** Examinei o projeto para usar uma estrutura próxima da que você já conhece.
-
-Vamos começar por uma base completa de **usuário e autenticação**. Os nomes de arquivos abaixo indicam onde você deverá criar cada classe **no projeto novo da prova**.
 
 **1. O que esta base vai entregar**
 
