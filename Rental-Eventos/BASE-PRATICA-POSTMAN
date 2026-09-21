@@ -1,0 +1,1719 @@
+Sim. No Postman, você consegue testar praticamente tudo que testaria no Swagger — só que precisa montar a requisição manualmente. Para a prova, eu usaria sempre a mesma sequência: subir o Spring → testar um GET simples → cadastrar usuário → fazer login → copiar token → configurar Bearer Token → testar CRUD.
+
+Abaixo está o passo a passo bem operacional, pensando em VS Code + Postman Desktop + API rodando localmente sem internet.
+
+1. Antes de abrir o Postman
+
+No VS Code, abra o terminal:
+
+.\mvnw.cmd -o spring-boot:run
+
+Espere aparecer algo semelhante a:
+
+Started ProvaApplication
+
+ou:
+
+Started RentalEventosApplication
+
+Deixe esse terminal aberto.
+
+Se sua aplicação usa:
+
+server.port=8080
+
+a base da API será:
+
+http://localhost:8080
+
+Isso significa que:
+
+/usuarios
+
+vira:
+
+http://localhost:8080/usuarios
+
+E:
+
+/auth/login
+
+vira:
+
+http://localhost:8080/auth/login
+
+
+---
+
+2. A primeira tela do Postman
+
+Abra o Postman Desktop.
+
+Você pode criar uma coleção para não perder as requisições.
+
+Procure no lado esquerdo algo como:
+
+Collections
+
+Clique:
+
+Collections
+→ +
+
+ou:
+
+New
+→ Collection
+
+Nome:
+
+PROVA SPRING
+
+Salve.
+
+Dentro dela, você vai criar requisições como:
+
+01 - Cadastrar usuário
+02 - Login
+03 - Listar usuários
+04 - Buscar usuário
+05 - Atualizar usuário
+06 - Excluir usuário
+07 - Cadastrar equipamento
+...
+
+Isso deixa a prova muito mais organizada.
+
+
+---
+
+3. Entendendo a tela de uma requisição
+
+Quando abrir uma requisição, no topo você verá algo semelhante a:
+
+GET   | http://...
+
+O primeiro campo:
+
+GET
+
+é o método HTTP.
+
+Clique nele para trocar entre:
+
+GET
+POST
+PUT
+PATCH
+DELETE
+
+O campo ao lado é a URL.
+
+Depois existem abas semelhantes a:
+
+Params
+Authorization
+Headers
+Body
+Scripts
+Settings
+
+Para sua prova, as quatro mais importantes são:
+
+Params
+Authorization
+Headers
+Body
+
+
+---
+
+4. Faça primeiro um GET simples
+
+Se você já possui uma rota pública como:
+
+GET /teste
+
+faça:
+
+No Postman:
+
+1. clique em New Request
+
+
+2. selecione:
+
+
+
+GET
+
+3. na URL digite:
+
+
+
+http://localhost:8080/teste
+
+4. clique no botão:
+
+
+
+Send
+
+Se Controller retornar:
+
+return "API FUNCIONANDO";
+
+na parte inferior deve aparecer:
+
+API FUNCIONANDO
+
+e status:
+
+200 OK
+
+Se isso funciona, você já provou que:
+
+Postman
+↓
+HTTP
+↓
+Spring Boot
+↓
+Controller
+
+estão se comunicando.
+
+
+---
+
+5. POST — cadastrar usuário
+
+Agora vamos fazer o equivalente ao Try it out do Swagger.
+
+Supondo este endpoint:
+
+POST /usuarios
+
+No Postman:
+
+Passo 1
+
+Clique no método e selecione:
+
+POST
+
+Passo 2
+
+URL:
+
+http://localhost:8080/usuarios
+
+Passo 3
+
+Abaixo da URL, clique em:
+
+Body
+
+Passo 4
+
+Marque:
+
+raw
+
+Passo 5
+
+À direita do raw, provavelmente aparecerá:
+
+Text
+
+Clique e selecione:
+
+JSON
+
+Deve ficar algo semelhante a:
+
+Body → raw → JSON
+
+Passo 6
+
+Na caixa grande escreva:
+
+{
+  "nome": "Administrador",
+  "email": "admin@email.com",
+  "senha": "12345678",
+  "tipo": "ADMIN"
+}
+
+Passo 7
+
+Clique:
+
+Send
+
+
+---
+
+6. O que deve aparecer
+
+Se der certo, embaixo deve aparecer algo semelhante a:
+
+Status: 201 Created
+
+Body:
+
+{
+  "id": 1,
+  "nome": "Administrador",
+  "email": "admin@email.com",
+  "tipo": "ADMIN"
+}
+
+Observe que:
+
+senha
+
+não deveria aparecer na resposta.
+
+
+---
+
+7. Onde fica o Content-Type
+
+Quando você escolhe:
+
+Body
+→ raw
+→ JSON
+
+o Postman normalmente adiciona automaticamente:
+
+Content-Type: application/json
+
+Você pode conferir clicando:
+
+Headers
+
+Deve existir algo parecido com:
+
+Key	Value
+
+Content-Type	application/json
+
+
+Se estiver fazendo POST/PUT e receber:
+
+415 Unsupported Media Type
+
+confira isso.
+
+Se precisar colocar manualmente:
+
+Clique:
+
+Headers
+
+adicione uma linha:
+
+KEY:
+Content-Type
+
+VALUE:
+application/json
+
+
+---
+
+8. LOGIN NO POSTMAN
+
+Agora faça o login.
+
+Crie nova requisição:
+
+02 - Login
+
+Método:
+
+POST
+
+URL:
+
+http://localhost:8080/auth/login
+
+Clique:
+
+Body
+→ raw
+→ JSON
+
+Digite:
+
+{
+  "email": "admin@email.com",
+  "senha": "12345678"
+}
+
+Clique:
+
+Send
+
+Resposta esperada:
+
+{
+  "token": "eyJhbGciOiJIUzI1NiJ9..."
+}
+
+
+---
+
+9. COPIANDO O TOKEN
+
+Na resposta, você verá algo enorme:
+
+eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBlbWFpbC5jb20iLCJ0aXBvIjoiQURNSU4i...
+
+Copie somente o conteúdo do token.
+
+Exemplo:
+
+eyJhbGciOiJIUzI1NiJ9.eyJ...
+
+Não copie:
+
+"token":
+
+nem as aspas.
+
+
+---
+
+10. COMO USAR O TOKEN NO POSTMAN
+
+Agora crie:
+
+03 - Listar usuários
+
+Método:
+
+GET
+
+URL:
+
+http://localhost:8080/usuarios
+
+Mas provavelmente essa rota está protegida.
+
+Clique na aba:
+
+Authorization
+
+Procure:
+
+Auth Type
+
+ou:
+
+Type
+
+Selecione:
+
+Bearer Token
+
+Vai aparecer um campo chamado:
+
+Token
+
+Cole:
+
+eyJhbGciOiJIUzI1NiJ9...
+
+Não escreva:
+
+Bearer eyJ...
+
+nesse campo.
+
+O Postman adiciona Bearer automaticamente.
+
+Clique:
+
+Send
+
+
+---
+
+11. O QUE O POSTMAN REALMENTE ENVIA
+
+Quando você seleciona:
+
+Authorization
+→ Bearer Token
+
+ele gera este header:
+
+Authorization: Bearer eyJhbGciOi...
+
+Você pode conferir na aba:
+
+Headers
+
+
+---
+
+12. GET — listar todos
+
+Configuração:
+
+Método:
+GET
+
+URL:
+http://localhost:8080/usuarios
+
+Authorization:
+Bearer Token
+
+Não precisa colocar nada em:
+
+Body
+
+Clique:
+
+Send
+
+Resposta:
+
+[
+  {
+    "id": 1,
+    "nome": "Administrador",
+    "email": "admin@email.com",
+    "tipo": "ADMIN"
+  }
+]
+
+Status:
+
+200 OK
+
+
+---
+
+13. GET POR ID
+
+Endpoint:
+
+GET /usuarios/{id}
+
+Se quer usuário 1:
+
+Método:
+
+GET
+
+URL:
+
+http://localhost:8080/usuarios/1
+
+Authorization:
+
+Bearer Token
+
+Clique:
+
+Send
+
+Resposta possível:
+
+{
+  "id": 1,
+  "nome": "Administrador",
+  "email": "admin@email.com",
+  "tipo": "ADMIN"
+}
+
+
+---
+
+14. O {id} NÃO É DIGITADO LITERALMENTE
+
+Se Controller tem:
+
+@GetMapping("/{id}")
+
+não envie:
+
+http://localhost:8080/usuarios/{id}
+
+Você substitui pelo número.
+
+Por exemplo:
+
+http://localhost:8080/usuarios/1
+
+ou:
+
+http://localhost:8080/usuarios/7
+
+
+---
+
+15. PUT — atualizar
+
+Crie:
+
+05 - Atualizar usuário
+
+Método:
+
+PUT
+
+URL:
+
+http://localhost:8080/usuarios/1
+
+Authorization:
+
+Bearer Token
+
+Depois:
+
+Body
+→ raw
+→ JSON
+
+Digite:
+
+{
+  "nome": "Administrador Atualizado",
+  "email": "admin@email.com",
+  "senha": null,
+  "tipo": "ADMIN"
+}
+
+Clique:
+
+Send
+
+Esperado:
+
+200 OK
+
+e:
+
+{
+  "id": 1,
+  "nome": "Administrador Atualizado",
+  "email": "admin@email.com",
+  "tipo": "ADMIN"
+}
+
+
+---
+
+16. DELETE
+
+Crie:
+
+06 - Excluir usuário
+
+Método:
+
+DELETE
+
+URL:
+
+http://localhost:8080/usuarios/1
+
+Authorization:
+
+Bearer Token
+
+Body:
+
+nenhum
+
+Clique:
+
+Send
+
+Esperado:
+
+204 No Content
+
+Nesse caso é normal a parte da resposta ficar vazia.
+
+
+---
+
+17. NÃO DELETE SEU ÚNICO ADMIN LOGO NO COMEÇO
+
+Durante a prova, faça DELETE somente no fim.
+
+Se você excluir:
+
+admin@email.com
+
+e ele for seu único usuário, terá que cadastrar/fazer login novamente.
+
+Uma boa ordem é:
+
+POST usuário
+↓
+LOGIN
+↓
+GET
+↓
+POST equipamentos
+↓
+GET equipamentos
+↓
+PUT
+↓
+relacionamentos
+↓
+DELETE por último
+
+
+---
+
+18. TESTANDO EQUIPAMENTO
+
+Supondo endpoint:
+
+POST /equipamentos
+
+Crie request.
+
+Método:
+
+POST
+
+URL:
+
+http://localhost:8080/equipamentos
+
+Authorization:
+
+Bearer Token
+
+Body:
+
+raw
+JSON
+
+De acordo com o DTO que você possui, poderia ser algo parecido com:
+
+{
+  "nome": "Caixa de Som",
+  "marca": "JBL",
+  "modelo": "PartyBox 710",
+  "categoria": "SOM",
+  "potencia": "800W",
+  "material": "Plástico",
+  "peso": 27.8,
+  "dimensoes": "40x90x40",
+  "cor": "Preto",
+  "preco": 500,
+  "quantidadeMinima": 2
+}
+
+Clique:
+
+Send
+
+Se o enum CategoriaEquipamento possuir exatamente:
+
+SOM
+
+funciona.
+
+Se tiver outros nomes, use exatamente o enum do seu código.
+
+
+---
+
+19. SE O ENUM DER 400
+
+Imagine:
+
+public enum CategoriaEquipamento {
+    SOM,
+    ILUMINACAO,
+    MOBILIARIO
+}
+
+Isto funciona:
+
+{
+  "categoria": "SOM"
+}
+
+Isto pode falhar:
+
+{
+  "categoria": "som"
+}
+
+ou:
+
+{
+  "categoria": "Som"
+}
+
+Use exatamente:
+
+SOM
+
+
+---
+
+20. TESTANDO RELACIONAMENTO
+
+Suponha:
+
+POST /eventos
+
+e EventoRequestDTO seja:
+
+public record EventoRequestDTO(
+    String nome,
+    LocalDate data,
+    Long usuarioId
+) {}
+
+No Postman:
+
+POST
+
+URL:
+
+http://localhost:8080/eventos
+
+Authorization:
+
+Bearer Token
+
+Body:
+
+{
+  "nome": "Formatura",
+  "data": "2026-10-20",
+  "usuarioId": 1
+}
+
+Observe:
+
+usuarioId
+
+é só:
+
+1
+
+Você normalmente não manda:
+
+{
+  "usuario": {
+    "id": 1,
+    "nome": "...",
+    "email": "..."
+  }
+}
+
+se seu DTO espera usuarioId.
+
+
+---
+
+21. DATAS NO POSTMAN
+
+Para:
+
+LocalDate
+
+mande:
+
+{
+  "data": "2026-10-20"
+}
+
+Formato:
+
+AAAA-MM-DD
+
+Para:
+
+LocalDateTime
+
+mande:
+
+{
+  "dataHora": "2026-10-20T19:30:00"
+}
+
+Formato:
+
+AAAA-MM-DDTHH:MM:SS
+
+
+---
+
+22. REQUEST PARAM
+
+Se Controller possui:
+
+@GetMapping("/buscar")
+public ... buscar(
+    @RequestParam String nome
+)
+
+você tem duas maneiras.
+
+Jeito 1 — digitar na URL
+
+http://localhost:8080/equipamentos/buscar?nome=caixa
+
+Jeito 2 — usando a aba Params
+
+URL:
+
+http://localhost:8080/equipamentos/buscar
+
+Clique:
+
+Params
+
+Vai aparecer tabela:
+
+KEY	VALUE
+
+nome	caixa
+
+
+Digite:
+
+KEY:
+nome
+
+VALUE:
+caixa
+
+O Postman montará automaticamente:
+
+?nome=caixa
+
+na URL.
+
+Clique:
+
+Send
+
+
+---
+
+23. VÁRIOS REQUEST PARAMS
+
+Suponha:
+
+GET /produtos?nome=mesa&ativo=true
+
+Na aba:
+
+Params
+
+coloque:
+
+KEY	VALUE
+
+nome	mesa
+ativo	true
+
+
+Postman gera:
+
+http://localhost:8080/produtos?nome=mesa&ativo=true
+
+
+---
+
+24. COMO SABER SE É PARAMS OU BODY
+
+Olhe o Controller.
+
+Se tem:
+
+@RequestParam
+
+use:
+
+Params
+
+Se tem:
+
+@RequestBody
+
+use:
+
+Body → raw → JSON
+
+Se tem:
+
+@PathVariable
+
+coloque valor diretamente na URL.
+
+Resumo:
+
+@RequestBody
+→ Body
+
+@RequestParam
+→ Params / ?x=y
+
+@PathVariable
+→ URL /usuarios/1
+
+
+---
+
+25. COMO SABER O MÉTODO NO POSTMAN
+
+Olhe anotação.
+
+@GetMapping
+
+Postman:
+
+GET
+
+@PostMapping
+
+Postman:
+
+POST
+
+@PutMapping
+
+Postman:
+
+PUT
+
+@PatchMapping
+
+Postman:
+
+PATCH
+
+@DeleteMapping
+
+Postman:
+
+DELETE
+
+
+---
+
+26. COMO DESCOBRIR A URL
+
+Exemplo:
+
+@RestController
+@RequestMapping("/usuarios")
+public class UsuarioController {
+
+    @GetMapping("/{id}")
+    public ...
+}
+
+Some:
+
+@RequestMapping("/usuarios")
++
+@GetMapping("/{id}")
+
+Resultado:
+
+GET /usuarios/{id}
+
+Com ID 1:
+
+http://localhost:8080/usuarios/1
+
+Outro exemplo:
+
+@RequestMapping("/auth")
+
+
+@PostMapping("/login")
+
+=
+
+POST /auth/login
+
+URL:
+
+http://localhost:8080/auth/login
+
+
+---
+
+27. MUITO IMPORTANTE: CAMINHO DO SWAGGER NÃO É PREFIXO DA API
+
+Você pode ter:
+
+springdoc.swagger-ui.path=/rental-eventos/swagger-ui.html
+
+Isso NÃO significa automaticamente que sua API seja:
+
+http://localhost:8080/rental-eventos/usuarios
+
+Esse property só muda o caminho do Swagger.
+
+Se Controller diz:
+
+@RequestMapping("/usuarios")
+
+a rota continua:
+
+http://localhost:8080/usuarios
+
+a menos que você também tenha configurado algo como:
+
+server.servlet.context-path=/rental-eventos
+
+
+---
+
+28. COMO SALVAR UMA REQUEST
+
+Depois de configurar:
+
+POST
+http://localhost:8080/usuarios
+
+clique:
+
+Save
+
+Escolha coleção:
+
+PROVA SPRING
+
+Nome:
+
+01 - Cadastrar usuário
+
+Repita para cada endpoint.
+
+Na hora da prova você vai apenas:
+
+clicar na request
+↓
+alterar JSON se necessário
+↓
+Send
+
+
+---
+
+29. UM TRUQUE MUITO BOM: VARIÁVEL DE BASE URL
+
+Para não digitar:
+
+http://localhost:8080
+
+toda hora, você pode usar variável.
+
+Mas como você ainda está aprendendo Postman e a prova é amanhã, não é obrigatório.
+
+Pode simplesmente manter URLs completas.
+
+É mais difícil quebrar.
+
+Por exemplo:
+
+http://localhost:8080/usuarios
+http://localhost:8080/auth/login
+http://localhost:8080/equipamentos
+
+Simples e seguro.
+
+
+---
+
+30. UM TRUQUE ÚTIL: DUPLICAR REQUEST
+
+Se já fez:
+
+GET /usuarios
+
+e quer criar:
+
+GET /usuarios/1
+
+no painel esquerdo, botão direito na request ou menu:
+
+...
+
+procure:
+
+Duplicate
+
+Duplique.
+
+Depois altere só URL:
+
+/usuarios
+
+para:
+
+/usuarios/1
+
+Isso preserva Authorization.
+
+
+---
+
+31. COMO REUTILIZAR TOKEN SEM COLAR EM TODAS
+
+Uma maneira simples é configurar Bearer Token em cada request.
+
+Para a prova isso já é suficiente.
+
+Você também pode configurar autorização na Collection inteira.
+
+Clique na coleção:
+
+PROVA SPRING
+
+Procure:
+
+Authorization
+
+Selecione:
+
+Bearer Token
+
+Cole o token.
+
+Depois, nas requests, o tipo de Authorization pode ficar:
+
+Inherit auth from parent
+
+Assim todas usam token da Collection.
+
+Isso é MUITO útil.
+
+
+---
+
+32. CONFIGURAÇÃO RECOMENDADA DA COLLECTION
+
+Coleção:
+
+PROVA SPRING
+
+Authorization:
+
+Bearer Token
+
+Token:
+
+eyJ...
+
+Depois cada request protegida:
+
+Authorization
+→ Inherit auth from parent
+
+Mas cadastro/login precisam ser públicos.
+
+Neles você pode colocar:
+
+Authorization
+→ No Auth
+
+
+---
+
+33. QUANDO O TOKEN EXPIRAR
+
+Você começa a receber:
+
+401 Unauthorized
+
+Volte para:
+
+02 - Login
+
+Clique:
+
+Send
+
+Copie novo token.
+
+Cole novamente na Collection ou request.
+
+
+---
+
+34. COMO LER A RESPOSTA DO POSTMAN
+
+Na parte de baixo você verá algo semelhante a:
+
+Body
+Cookies
+Headers
+Test Results
+
+E acima:
+
+Status: 200 OK
+Time: ...
+Size: ...
+
+Para prova, sempre olhe primeiro:
+
+STATUS
+
+Depois:
+
+BODY
+
+
+---
+
+35. SE DER 400
+
+Exemplo:
+
+400 Bad Request
+
+Confira:
+
+Body está em raw → JSON?
+JSON possui vírgulas corretas?
+campos têm nomes corretos?
+faltou campo obrigatório?
+enum está escrito exatamente certo?
+data está correta?
+valor positivo está negativo?
+
+Olhe também terminal do VS Code.
+
+
+---
+
+36. SE DER 401
+
+401 Unauthorized
+
+Pergunte:
+
+Essa rota deveria ser pública?
+
+Se sim:
+
+SecurityConfig pode estar errado.
+
+Se é privada:
+
+confira:
+
+Authorization
+→ Bearer Token
+
+e token.
+
+
+---
+
+37. SE DER 403
+
+403 Forbidden
+
+Normalmente:
+
+token válido
++
+usuário sem role necessária
+
+Exemplo:
+
+token = USUARIO
+endpoint exige ADMIN
+
+
+---
+
+38. SE DER 404
+
+404 Not Found
+
+Cheque primeiro a URL.
+
+Exemplo errado:
+
+http://localhost:8080/usuario
+
+Controller:
+
+@RequestMapping("/usuarios")
+
+Correto:
+
+http://localhost:8080/usuarios
+
+Também pode ser ID inexistente, dependendo da implementação.
+
+
+---
+
+39. SE DER 405
+
+405 Method Not Allowed
+
+Você provavelmente escolheu método errado.
+
+Exemplo:
+
+Controller:
+
+@PostMapping
+
+Postman está:
+
+GET
+
+Troque para:
+
+POST
+
+
+---
+
+40. SE DER 415
+
+415 Unsupported Media Type
+
+Confira:
+
+Body
+→ raw
+→ JSON
+
+e Header:
+
+Content-Type: application/json
+
+
+---
+
+41. SE DER 500
+
+500 Internal Server Error
+
+O Postman não é onde você encontrará a principal explicação.
+
+Olhe imediatamente o:
+
+TERMINAL DO VS CODE
+
+Procure:
+
+Caused by:
+
+especialmente no final.
+
+
+---
+
+42. POSTMAN E SPRING DEVEM FICAR ABERTOS JUNTOS
+
+Sua tela de prova ideal:
+
+VS CODE
+├── código
+└── terminal Spring rodando
+
+POSTMAN
+└── requests
+
+Faça alteração no código.
+
+Se Spring reiniciar automaticamente:
+
+espere iniciar.
+
+Se não:
+
+pare:
+
+CTRL + C
+
+e rode novamente:
+
+.\mvnw.cmd -o spring-boot:run
+
+Depois volte ao Postman.
+
+
+---
+
+43. TESTE COMPLETO QUE VOCÊ DEVERIA TREINAR HOJE
+
+Faça exatamente esta sequência.
+
+1
+
+VS Code:
+
+.\mvnw.cmd -o spring-boot:run
+
+2
+
+Postman:
+
+POST http://localhost:8080/usuarios
+
+Body:
+
+{
+  "nome": "Administrador",
+  "email": "admin@email.com",
+  "senha": "12345678",
+  "tipo": "ADMIN"
+}
+
+Esperado:
+
+201
+
+
+---
+
+3
+
+POST http://localhost:8080/auth/login
+
+Body:
+
+{
+  "email": "admin@email.com",
+  "senha": "12345678"
+}
+
+Esperado:
+
+200
+
+Copie token.
+
+
+---
+
+4
+
+GET http://localhost:8080/usuarios
+
+Authorization:
+
+Bearer Token
+
+Esperado:
+
+200
+
+
+---
+
+5
+
+GET http://localhost:8080/usuarios/1
+
+Esperado:
+
+200
+
+
+---
+
+6
+
+PUT http://localhost:8080/usuarios/1
+
+Body:
+
+{
+  "nome": "Admin Editado",
+  "email": "admin@email.com",
+  "senha": null,
+  "tipo": "ADMIN"
+}
+
+Esperado:
+
+200
+
+
+---
+
+7
+
+GET http://localhost:8080/usuarios/1
+
+Confirme:
+
+"nome": "Admin Editado"
+
+
+---
+
+8
+
+Crie equipamento.
+
+POST http://localhost:8080/equipamentos
+
+Bearer Token.
+
+Body conforme DTO.
+
+
+---
+
+9
+
+GET http://localhost:8080/equipamentos
+
+Confira se apareceu.
+
+
+---
+
+10
+
+Somente no final:
+
+DELETE ...
+
+
+---
+
+44. A COLA MAIS IMPORTANTE DO POSTMAN
+
+Decore esta tabela:
+
+Controller	Postman
+
+@GetMapping	GET
+@PostMapping	POST
+@PutMapping	PUT
+@PatchMapping	PATCH
+@DeleteMapping	DELETE
+@RequestBody	Body → raw → JSON
+@RequestParam	Params
+@PathVariable	escrever valor na URL
+rota protegida	Authorization → Bearer Token
+JSON	Content-Type application/json
+
+
+E:
+
+POST/PUT/PATCH
+normalmente:
+Body → raw → JSON
+
+GET/DELETE
+normalmente:
+sem Body
+
+
+---
+
+45. SE SUA PROVA USAR LOCADOR E LOCATÁRIO EM VEZ DE /usuarios
+
+Seu projeto original também possui rotas nesse padrão.
+
+A lógica no Postman é exatamente a mesma.
+
+Por exemplo:
+
+POST
+http://localhost:8080/locador/salvar-locador
+
+Body:
+
+{
+  "nome": "João",
+  "email": "joao@email.com",
+  "senha": "12345678"
+}
+
+E login, conforme Controller:
+
+POST
+http://localhost:8080/locador/login
+
+Body:
+
+{
+  "email": "joao@email.com",
+  "senha": "12345678"
+}
+
+Ou para locatário:
+
+POST
+http://localhost:8080/locatario/salvar-locatario
+
+e:
+
+POST
+http://localhost:8080/locatario/login
+
+Não decore a URL sem olhar o Controller. A verdade está sempre na combinação de:
+
+@RequestMapping(...)
+
+
+@GetMapping(...)
+@PostMapping(...)
+...
+
+
+---
+
+46. REGRA DE SOBREVIVÊNCIA
+
+Se você olha um Controller que nunca viu, faça:
+
+1. Procure @RequestMapping da classe.
+
+2. Procure @GetMapping / @PostMapping / etc.
+
+3. Some os caminhos.
+
+4. Veja parâmetros.
+
+5. Se @RequestBody:
+   Body → raw → JSON.
+
+6. Se @PathVariable:
+   substitua na URL.
+
+7. Se @RequestParam:
+   use Params.
+
+8. Se Security protege:
+   Authorization → Bearer Token.
+
+9. Send.
+
+10. Veja status.
+
+11. Se der erro, olhe terminal do VS Code.
+
+Isso te permite testar qualquer API da prova no Postman, mesmo que o minimundo seja completamente diferente do Rental Eventos.
+
+Um treino que vale muito fazer antes da prova é pegar seu Rental Eventos atual e executar no Postman, em ordem, cadastro → login → GET protegido → POST equipamento → PUT → DELETE. Depois disso o Postman tende a deixar de parecer uma ferramenta nova e vira praticamente um “Swagger manual”.
