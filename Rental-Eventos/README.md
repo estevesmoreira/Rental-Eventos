@@ -1,6 +1,116 @@
 # Rental-Eventos 
 
 ### Link do Swagger: http://localhost:8080/rental-eventos/swagger-ui/index.html
+## SUMÁRIO
+
+> **Como usar:** no GitHub, clique no título para ir direto à seção. Em um editor/visualizador de texto, use o número da **linha** indicado. Estes números consideram este sumário inserido imediatamente após a linha 3 do arquivo.
+
+### 1. Enunciado e estratégia de prova
+
+* [CONTEXTUALIZAÇÃO](#contextualização) — linha **191**
+* [DESAFIO](#desafio) — linha **213**
+* [OBJETIVO DESTE ARQUIVO](#objetivo-deste-arquivo) — linha **231**
+* [\(ORDEM\) PARTE 1 — O QUE FAZER NOS PRIMEIROS 10 MINUTOS](#ordem-parte-1--o-que-fazer-nos-primeiros-10-minutos) — linha **260**
+* [DIVISÃO DAS 3 HORAS](#divisão-das-3-horas) — linha **350**
+* [REGRA DE OURO DA PROVA](#regra-de-ouro-da-prova) — linha **448**
+* [\(ESTRUTURA\) ESTRUTURA DE PACOTES](#estrutura-estrutura-de-pacotes) — linha **464**
+* [CLASSE MAIN](#classe-main) — linha **556**
+* [\(PROPERTIES\) application.properties](#properties-applicationproperties) — linha **597**
+
+### 2. Usuário, autenticação, JWT e Security
+
+* [\(USUARIO\) PARTE 2 — USUÁRIO COMPLETO](#usuario-parte-2--usuário-completo) — linha **666**
+* [TipoUsuario.java](#tipousuariojava) — linha **689**
+* [Usuario.java](#usuariojava) — linha **744**
+* [UsuarioRequestDTO.java](#usuariorequestdtojava) — linha **877**
+* [UsuarioUpdateDTO.java](#usuarioupdatedtojava) — linha **922**
+* [UsuarioResponseDTO.java](#usuarioresponsedtojava) — linha **970**
+* [LoginDTO.java](#logindtojava) — linha **1009**
+* [LoginResponseDTO.java](#loginresponsedtojava) — linha **1067**
+* [UsuarioRepository.java](#usuariorepositoryjava) — linha **1092**
+* [\(SERVICE\) UsuarioService.java](#service-usuarioservicejava) — linha **1130**
+* [\(JWT\) JwtUtil.java](#jwt-jwtutiljava) — linha **1326**
+* [AuthService.java](#authservicejava) — linha **1432**
+* [AuthController.java](#authcontrollerjava) — linha **1506**
+* [UsuarioController.java](#usuariocontrollerjava) — linha **1573**
+* [\(SECURITY\) SecurityConfig.java](#security-securityconfigjava) — linha **1690**
+* [ENTENDA A PARTE DA ROLE](#entenda-a-parte-da-role) — linha **1846**
+* [EXEMPLO DE SECURITY MAIS COMPLETO](#exemplo-de-security-mais-completo) — linha **1907**
+* [\(JWT FILTER\) PRECISO DO JwtAuthenticationFilter?](#jwt-filter-preciso-do-jwtauthenticationfilter) — linha **1966**
+* [\(SWAGGER\) Swagger.java](#swagger-swaggerjava) — linha **2020**
+
+### 3. Criar/abrir o projeto e trabalhar offline
+
+* [ANEXO — CRIANDO E SALVANDO O PROJETO NA PROVA](#anexo--criando-e-salvando-o-projeto-na-prova) — linha **2086**
+* [\(VSCODE\) CRIANDO UM PROJETO SPRING PELO VS CODE](#vscode-criando-um-projeto-spring-pelo-vs-code) — linha **2110**
+* [DEPENDÊNCIAS](#dependências) — linha **2205**
+* [\(OFFLINE\) MÉTODO MAIS SEGURO NA PROVA](#offline-método-mais-seguro-na-prova) — linha **2241**
+* [O QUE COPIAR DO PROJETO BASE](#o-que-copiar-do-projeto-base) — linha **2280**
+* [\(NOVO\) CRIANDO PROJETO MANUALMENTE SEM INITIALIZR](#novo-criando-projeto-manualmente-sem-initializr) — linha **2318**
+* [ESTRUTURA FINAL](#estrutura-final) — linha **2393**
+* [\(POM\) POM.XML BASE](#pom-pomxml-base) — linha **2434**
+* [\(PROPERTIES\) APPLICATION.PROPERTIES BASE](#properties-applicationproperties-base) — linha **2675**
+* [\(VSCODE\) ABRINDO CORRETAMENTE NO VS CODE](#vscode-abrindo-corretamente-no-vs-code) — linha **2745**
+* [\(JAVA\) CONFERINDO O JAVA](#java-conferindo-o-java) — linha **2807**
+* [VS CODE — CONFIGURAR JDK](#vs-code--configurar-jdk) — linha **2859**
+* [\(MAVEN\) COMANDOS ESSENCIAIS](#maven-comandos-essenciais) — linha **2919**
+* [OFFLINE](#offline) — linha **2953**
+* [\(MAVEN\) COMO SABER SE O PROBLEMA É MAVEN OU SEU CÓDIGO](#maven-como-saber-se-o-problema-é-maven-ou-seu-código) — linha **3029**
+* [\(RED\) TODAS AS CLASSES FICARAM VERMELHAS NO VS CODE](#red-todas-as-classes-ficaram-vermelhas-no-vs-code) — linha **3063**
+* [\(POM RED\) DEPENDÊNCIAS VERMELHAS NO POM](#pom-red-dependências-vermelhas-no-pom) — linha **3135**
+* [CACHE DO MAVEN](#cache-do-maven) — linha **3173**
+* [\(WRAPPER\) ERRO DO MAVEN WRAPPER OFFLINE](#wrapper-erro-do-maven-wrapper-offline) — linha **3194**
+
+### 4. Outras IDEs, packages, banco e Swagger
+
+* [\(IDE\) SE NÃO FOR VS CODE](#ide-se-não-for-vs-code) — linha **3226**
+* [\(INTELLIJ\) INTELLIJ IDEA](#intellij-intellij-idea) — linha **3249**
+* [\(ECLIPSE / STS\)](#eclipse--sts) — linha **3291**
+* [\(NETBEANS\)](#netbeans) — linha **3339**
+* [\(IDE DESCONHECIDA\) SE A PROVA USAR UMA IDE PRÓPRIA](#ide-desconhecida-se-a-prova-usar-uma-ide-própria) — linha **3377**
+* [\(PACKAGE\) ERRO MAIS COMUM AO COPIAR PROJETO](#package-erro-mais-comum-ao-copiar-projeto) — linha **3411**
+* [A CLASSE MAIN PRECISA ESTAR NO PACOTE RAIZ](#a-classe-main-precisa-estar-no-pacote-raiz) — linha **3455**
+* [\(IMPORT\) ERRO DE IMPORT](#import-erro-de-import) — linha **3493**
+* [\(IMPORT\) IMPORT ERRADO ENTRE JAVAX E JAKARTA](#import-import-errado-entre-javax-e-jakarta) — linha **3525**
+* [\(BANCO\) BANCO NÃO CONECTA](#banco-banco-não-conecta) — linha **3551**
+* [\(BANCO\) PASSWORD AUTHENTICATION FAILED](#banco-password-authentication-failed) — linha **3615**
+* [\(BANCO\) DATABASE DOES NOT EXIST](#banco-database-does-not-exist) — linha **3642**
+* [\(RESET\) ALTEREI ENTIDADE E BANCO FICOU ESTRANHO](#reset-alterei-entidade-e-banco-ficou-estranho) — linha **3666**
+* [RESET MAIS SEGURO: APAGAR APENAS AS TABELAS DO PROJETO](#reset-mais-seguro-apagar-apenas-as-tabelas-do-projeto) — linha **3704**
+* [RESET TOTAL DO SCHEMA — SOMENTE EM BANCO DESCARTÁVEL](#reset-total-do-schema--somente-em-banco-descartável) — linha **3730**
+* [\(SQL\) VER SE TABELAS FORAM CRIADAS](#sql-ver-se-tabelas-foram-criadas) — linha **3808**
+* [\(JPA\) MOSTRAR SQL](#jpa-mostrar-sql) — linha **3826**
+* [\(SWAGGER\) SWAGGER NÃO ABRE](#swagger-swagger-não-abre) — linha **3848**
+* [\(TESTE\) ENDPOINT DE TESTE](#teste-endpoint-de-teste) — linha **3981**
+* [\(404\) 404 NOT FOUND](#404-404-not-found) — linha **4023**
+* [\(405\) METHOD NOT ALLOWED](#405-method-not-allowed) — linha **4057**
+* [\(400\) BAD REQUEST](#400-bad-request) — linha **4085**
+* [\(500\) INTERNAL SERVER ERROR](#500-internal-server-error) — linha **4126**
+* [\(POM\) ERRO DE XML](#pom-erro-de-xml) — linha **4146**
+* [\(TARGET\) PROJETO PARECE USAR CÓDIGO ANTIGO](#target-projeto-parece-usar-código-antigo) — linha **4216**
+* [\(PORT\) PORTA 8080 OCUPADA](#port-porta-8080-ocupada) — linha **4262**
+
+### 5. Tipos, anotações e arquitetura por pacote
+
+* [\(DATA TYPES\) TIPOS DE DADOS MAIS IMPORTANTES](#data-types-tipos-de-dados-mais-importantes) — linha **4311**
+* [CPF NÃO DEVE SER LONG](#cpf-não-deve-ser-long) — linha **4333**
+* [\(BIGDECIMAL\) DINHEIRO](#bigdecimal-dinheiro) — linha **4366**
+* [\(BOOLEAN\)](#boolean) — linha **4390**
+* [\(LOCALDATE\)](#localdate) — linha **4419**
+* [\(LOCALDATETIME\)](#localdatetime) — linha **4458**
+* [\(ENTITY\) ANOTAÇÕES PRINCIPAIS DE MODEL/ENTITY](#entity-anotações-principais-de-modelentity) — linha **4474**
+* [\(DTO\) ANOTAÇÕES PRINCIPAIS DE DTO](#dto-anotações-principais-de-dto) — linha **4528**
+* [DIFERENÇA ENTRE NOTNULL, NOTEMPTY E NOTBLANK](#diferença-entre-notnull-notempty-e-notblank) — linha **4609**
+* [\(REPOSITORY\) PACOTE REPOSITORY](#repository-pacote-repository) — linha **4651**
+* [MÉTODOS DERIVADOS](#métodos-derivados) — linha **4676**
+* [\(SERVICE\) PACOTE SERVICE](#service-pacote-service) — linha **4707**
+* [\(TRANSACTIONAL\)](#transactional) — linha **4752**
+* [\(CONTROLLER\) PACOTE CONTROLLER](#controller-pacote-controller) — linha **4782**
+* [\(CONFIG\) PACOTE CONFIGS](#config-pacote-configs) — linha **4888**
+* [\(SECURITY\) ANOTAÇÕES/CLASSES PRINCIPAIS](#security-anotaçõesclasses-principais) — linha **4916**
+* [\(RELATIONSHIPS\) ANOTAÇÕES DE RELACIONAMENTO](#relationships-anotações-de-relacionamento) — linha **4953**
+*
+
 
 ## CONTEXTUALIZAÇÃO
 
