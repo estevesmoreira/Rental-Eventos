@@ -1,7 +1,3 @@
-Sim. No Postman, você consegue testar praticamente tudo que testaria no Swagger — só que precisa montar a requisição manualmente. Para a prova, eu usaria sempre a mesma sequência: subir o Spring → testar um GET simples → cadastrar usuário → fazer login → copiar token → configurar Bearer Token → testar CRUD.
-
-Abaixo está o passo a passo bem operacional, pensando em VS Code + Postman Desktop + API rodando localmente sem internet.
-
 1. Antes de abrir o Postman
 
 No VS Code, abra o terminal:
